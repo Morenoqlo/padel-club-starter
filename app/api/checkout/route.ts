@@ -94,6 +94,33 @@ export async function POST(req: NextRequest) {
       orderItems.map((item) => ({ ...item, order_id: order.id }))
     );
 
+    // ── Validar y reservar stock ──────────────────────────
+    for (const item of data.items) {
+      const product = products!.find((p) => p.id === item.productId);
+      if (!product) continue;
+      const { data: prod } = await (supabase as any)
+        .from("products")
+        .select("stock_quantity")
+        .eq("id", item.productId)
+        .single();
+
+      if (prod?.stock_quantity != null) {
+        if (prod.stock_quantity < item.quantity) {
+          // Cancelar la orden si no hay stock suficiente
+          await (supabase as any).from("orders").update({ status: "cancelled" }).eq("id", order.id);
+          return NextResponse.json(
+            { error: `Stock insuficiente para "${product.name}"` },
+            { status: 400 }
+          );
+        }
+        // Decrementar stock al crear la orden (se revierte si el pago falla vía webhook)
+        await (supabase as any)
+          .from("products")
+          .update({ stock_quantity: prod.stock_quantity - item.quantity })
+          .eq("id", item.productId);
+      }
+    }
+
     // ── Route to payment provider ─────────────────────────
     if (data.paymentProvider === "stripe") {
       const { createPaymentIntent } = await import("@/lib/payments/stripe");

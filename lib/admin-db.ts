@@ -1,17 +1,15 @@
 /**
  * Admin DB helper — client-side
- * Llama a /api/admin/crud usando la service role key (server-side)
- * para que las operaciones bypaseen RLS y persistan en Supabase real.
+ * Llama a /api/admin/crud desde el panel admin.
+ * La autenticación se verifica server-side via sesión Supabase
+ * (o DEV_BYPASS_ADMIN_AUTH en desarrollo).
  */
 
 async function request(method: string, body: object) {
-  const secret = process.env.NEXT_PUBLIC_ADMIN_API_SECRET ?? "";
   const res = await fetch("/api/admin/crud", {
     method,
-    headers: {
-      "Content-Type": "application/json",
-      ...(secret ? { "x-admin-secret": secret } : {}),
-    },
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin", // envía cookies de sesión automáticamente
     body: JSON.stringify(body),
   });
   const json = await res.json();

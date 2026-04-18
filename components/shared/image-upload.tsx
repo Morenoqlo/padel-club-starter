@@ -27,8 +27,6 @@ export function ImageUpload({
   const [imgError, setImgError] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const secret = process.env.NEXT_PUBLIC_ADMIN_API_SECRET ?? "";
-
   const aspectClass = {
     video: "aspect-video",
     square: "aspect-square",
@@ -46,7 +44,7 @@ export function ImageUpload({
 
       const res = await fetch("/api/admin/upload", {
         method: "POST",
-        headers: { "x-admin-secret": secret },
+        credentials: "same-origin",
         body: fd,
       });
       const json = await res.json();
@@ -62,7 +60,7 @@ export function ImageUpload({
     } finally {
       setUploading(false);
     }
-  }, [folder, onChange, secret]);
+  }, [folder, onChange]);
 
   // ── Handlers ───────────────────────────────────────────────────
 

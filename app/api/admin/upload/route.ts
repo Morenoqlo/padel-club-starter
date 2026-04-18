@@ -5,17 +5,17 @@ const BUCKET = "club-images";
 const MAX_SIZE_MB = 5;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
 
-function authGuard(req: NextRequest) {
-  const secret = process.env.ADMIN_API_SECRET;
-  if (!secret) return null;
-  if (req.headers.get("x-admin-secret") !== secret) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
+async function authGuard() {
+  if (process.env.DEV_BYPASS_ADMIN_AUTH === "true") return null;
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   return null;
 }
 
 export async function POST(req: NextRequest) {
-  const authErr = authGuard(req);
+  const authErr = await authGuard();
   if (authErr) return authErr;
 
   try {
@@ -26,15 +26,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No se recibió ningún archivo" }, { status: 400 });
     }
 
-    // Validar tipo
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: `Tipo no permitido. Usa: ${ALLOWED_TYPES.map(t => t.split("/")[1]).join(", ")}` },
+        { error: `Tipo no permitido. Usa: ${ALLOWED_TYPES.map((t) => t.split("/")[1]).join(", ")}` },
         { status: 400 }
       );
     }
 
-    // Validar tamaño
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
       return NextResponse.json(
         { error: `El archivo supera el límite de ${MAX_SIZE_MB}MB` },
@@ -42,35 +40,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generar nombre único
     const ext = file.name.split(".").pop() ?? "jpg";
     const ts = Date.now();
     const rand = Math.random().toString(36).slice(2, 8);
     const fileName = `${ts}-${rand}.${ext}`;
-    const folder = formData.get("folder") as string ?? "general";
+    const folder = (formData.get("folder") as string) ?? "general";
     const path = `${folder}/${fileName}`;
 
-    // Subir a Supabase Storage
     const supabase = await createServiceClient();
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
-      .upload(path, buffer, {
-        contentType: file.type,
-        upsert: false,
-      });
+      .upload(path, buffer, { contentType: file.type, upsert: false });
 
     if (uploadError) {
       console.error("[Upload]", uploadError);
       return NextResponse.json({ error: uploadError.message }, { status: 500 });
     }
 
-    // Obtener URL pública
-    const { data: { publicUrl } } = supabase.storage
-      .from(BUCKET)
-      .getPublicUrl(path);
+    const { data: { publicUrl } } = supabase.storage.from(BUCKET).getPublicUrl(path);
 
     return NextResponse.json({ url: publicUrl, path });
   } catch (err: any) {
@@ -79,9 +69,8 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE — eliminar imagen del storage
 export async function DELETE(req: NextRequest) {
-  const authErr = authGuard(req);
+  const authErr = await authGuard();
   if (authErr) return authErr;
 
   try {

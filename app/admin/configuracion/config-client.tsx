@@ -93,10 +93,8 @@ export function ConfigClient({ initial }: ConfigClientProps) {
     try {
       const res = await fetch("/api/admin/config", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_API_SECRET ?? "",
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify(cfg),
       });
       if (!res.ok) throw new Error("Error al guardar");

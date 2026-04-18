@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -15,6 +16,8 @@ import {
   FlaskConical,
   ShoppingCart,
   Star,
+  Menu,
+  X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { brandConfig } from "@/config/brand";
@@ -39,6 +42,7 @@ interface AdminSidebarProps {
 export function AdminSidebar({ devMode = false }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -46,15 +50,26 @@ export function AdminSidebar({ devMode = false }: AdminSidebarProps) {
     router.push("/admin/login");
   };
 
-  return (
-    <aside className="sticky top-0 h-screen w-60 shrink-0 border-r border-border bg-background flex flex-col">
+  const SidebarContent = () => (
+    <>
       {/* Logo */}
-      <div className="border-b border-border px-5 py-4">
-        <Link href="/" className="flex items-center gap-2 font-display font-bold">
+      <div className="border-b border-border px-5 py-4 flex items-center justify-between">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-display font-bold"
+          onClick={() => setMobileOpen(false)}
+        >
           <span className="text-accent">{brandConfig.sport.icon}</span>
           <span className="text-sm">{brandConfig.shortName}</span>
           <span className="text-xs text-muted-foreground">Admin</span>
         </Link>
+        {/* Close button — only on mobile */}
+        <button
+          className="md:hidden rounded-md p-1 text-muted-foreground hover:bg-secondary"
+          onClick={() => setMobileOpen(false)}
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
       {/* Dev mode badge */}
@@ -77,6 +92,7 @@ export function AdminSidebar({ devMode = false }: AdminSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setMobileOpen(false)}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
@@ -96,6 +112,7 @@ export function AdminSidebar({ devMode = false }: AdminSidebarProps) {
         <Link
           href="/"
           target="_blank"
+          onClick={() => setMobileOpen(false)}
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-secondary transition-colors"
         >
           <ExternalLink className="h-4 w-4" />
@@ -111,6 +128,42 @@ export function AdminSidebar({ devMode = false }: AdminSidebarProps) {
           </button>
         )}
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* ── Desktop sidebar (always visible) ─────────────────── */}
+      <aside className="hidden md:flex sticky top-0 h-screen w-60 shrink-0 border-r border-border bg-background flex-col">
+        <SidebarContent />
+      </aside>
+
+      {/* ── Mobile: hamburger button ──────────────────────────── */}
+      <button
+        className="md:hidden fixed top-3 left-3 z-50 rounded-xl bg-background border border-border p-2.5 shadow-md"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Abrir menú"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
+      {/* ── Mobile: backdrop ──────────────────────────────────── */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile: slide-over drawer ─────────────────────────── */}
+      <aside
+        className={cn(
+          "md:hidden fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-background border-r border-border transition-transform duration-300",
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <SidebarContent />
+      </aside>
+    </>
   );
 }

@@ -27,7 +27,7 @@ export default async function AdminLayout({
     <div className="flex min-h-screen bg-secondary/30">
       <AdminSidebar devMode={isBypass} />
       <main className="flex-1 overflow-auto">
-        <div className="container max-w-5xl py-8">{children}</div>
+        <div className="container max-w-5xl py-8 pt-16 md:pt-8">{children}</div>
       </main>
     </div>
   );
