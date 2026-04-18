@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ── Semantic tokens ─────────────────────────────── */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 0 0% 4%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 4%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 142 71% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 4%;
+    --radius: 0.5rem;
+
+    /* ── Brand tokens ────────────────────────────────── */
+    --brand-50: 142 76% 97%;
+    --brand-100: 142 76% 90%;
+    --brand-500: 142 71% 45%;
+    --brand-600: 142 72% 38%;
+    --brand-900: 142 76% 15%;
+  }
+
+  .dark {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 142 71% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 0 0% 83.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-accent/20 text-accent;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2;
+  }
+}
+
+@layer components {
+  /* ── Section layouts ─────────────────────────────── */
+  .section {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  .section-sm {
+    @apply py-10 md:py-16;
+  }
+
+  /* ── Typography scale ────────────────────────────── */
+  .heading-hero {
+    @apply text-5xl font-bold leading-[0.95] tracking-tighter
+           md:text-7xl lg:text-8xl xl:text-9xl;
+  }
+
+  .heading-xl {
+    @apply text-4xl font-bold tracking-tighter md:text-5xl lg:text-6xl;
+  }
+
+  .heading-lg {
+    @apply text-3xl font-bold tracking-tight md:text-4xl;
+  }
+
+  .heading-md {
+    @apply text-2xl font-semibold tracking-tight md:text-3xl;
+  }
+
+  .body-lg {
+    @apply text-lg leading-relaxed text-muted-foreground;
+  }
+
+  .body-md {
+    @apply text-base leading-relaxed text-muted-foreground;
+  }
+
+  /* ── Label / overline ────────────────────────────── */
+  .label-overline {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-accent;
+  }
+
+  /* ── Gradient text ───────────────────────────────── */
+  .text-gradient {
+    @apply bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent;
+  }
+
+  /* ── Surface ─────────────────────────────────────── */
+  .surface {
+    @apply rounded-2xl bg-secondary/50 p-6 md:p-8;
+  }
+
+  .surface-dark {
+    @apply rounded-2xl bg-foreground p-6 text-background md:p-8;
+  }
+
+  /* ── Grid patterns ───────────────────────────────── */
+  .grid-dot-pattern {
+    background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+}
