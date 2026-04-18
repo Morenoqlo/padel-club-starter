@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { adminDb } from "@/lib/admin-db";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -123,25 +123,15 @@ export function FaqClient({ faqs }: { faqs: FAQ[] }) {
     };
 
     try {
-      const supabase = createClient();
       if (editing) {
-        const { error } = await (supabase as any)
-          .from("faq")
-          .update(payload)
-          .eq("id", editing.id);
-        if (error) throw error;
+        await adminDb.update("faq", editing.id, payload);
         setItems((prev) =>
           prev.map((f) => (f.id === editing.id ? { ...f, ...payload } : f))
         );
         toast.success("FAQ actualizada.");
       } else {
-        const { data, error } = await (supabase as any)
-          .from("faq")
-          .insert(payload)
-          .select()
-          .single();
-        if (error) throw error;
-        setItems((prev) => [...prev, data as FAQ]);
+        const data = await adminDb.insert<FAQ>("faq", payload);
+        setItems((prev) => [...prev, data]);
         toast.success("FAQ creada.");
       }
       router.refresh();
@@ -168,9 +158,7 @@ export function FaqClient({ faqs }: { faqs: FAQ[] }) {
   async function handleDelete(faq: FAQ) {
     if (!confirm(`¿Eliminar esta pregunta?`)) return;
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("faq").delete().eq("id", faq.id);
-      if (error) throw error;
+      await adminDb.delete("faq", faq.id);
       setItems((prev) => prev.filter((f) => f.id !== faq.id));
       toast.success("FAQ eliminada.");
       router.refresh();

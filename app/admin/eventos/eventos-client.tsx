@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { adminDb } from "@/lib/admin-db";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
@@ -159,13 +159,8 @@ export function EventosClient({ events }: { events: Event[] }) {
     };
 
     try {
-      const supabase = createClient();
       if (editing) {
-        const { error } = await (supabase as any)
-          .from("events")
-          .update(payload)
-          .eq("id", editing.id);
-        if (error) throw error;
+        await adminDb.update("events", editing.id, payload);
         setItems((prev) =>
           prev.map((ev) => (ev.id === editing.id ? { ...ev, ...payload } : ev))
         );
@@ -175,13 +170,10 @@ export function EventosClient({ events }: { events: Event[] }) {
           .toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9-]/g, "");
-        const { data, error } = await (supabase as any)
-          .from("events")
-          .insert({ ...payload, slug, current_participants: 0, image_url: null })
-          .select()
-          .single();
-        if (error) throw error;
-        setItems((prev) => [data as Event, ...prev]);
+        const data = await adminDb.insert<Event>("events", {
+          ...payload, slug, current_participants: 0, image_url: null,
+        });
+        setItems((prev) => [data, ...prev]);
         toast.success("Evento creado.");
       }
       router.refresh();
@@ -213,9 +205,7 @@ export function EventosClient({ events }: { events: Event[] }) {
   async function handleDelete(event: Event) {
     if (!confirm(`¿Eliminar "${event.title}"?`)) return;
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("events").delete().eq("id", event.id);
-      if (error) throw error;
+      await adminDb.delete("events", event.id);
       setItems((prev) => prev.filter((ev) => ev.id !== event.id));
       toast.success("Evento eliminado.");
       router.refresh();

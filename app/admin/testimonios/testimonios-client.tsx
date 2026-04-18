@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { adminDb } from "@/lib/admin-db";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -149,25 +149,17 @@ export function TestimoniosClient({ testimonials }: { testimonials: Testimonial[
     };
 
     try {
-      const supabase = createClient();
       if (editing) {
-        const { error } = await (supabase as any)
-          .from("testimonials")
-          .update(payload)
-          .eq("id", editing.id);
-        if (error) throw error;
+        await adminDb.update("testimonials", editing.id, payload);
         setItems((prev) =>
           prev.map((t) => (t.id === editing.id ? { ...t, ...payload } : t))
         );
         toast.success("Testimonio actualizado.");
       } else {
-        const { data, error } = await (supabase as any)
-          .from("testimonials")
-          .insert({ ...payload, author_image: null })
-          .select()
-          .single();
-        if (error) throw error;
-        setItems((prev) => [data as Testimonial, ...prev]);
+        const data = await adminDb.insert<Testimonial>("testimonials", {
+          ...payload, author_image: null,
+        });
+        setItems((prev) => [data, ...prev]);
         toast.success("Testimonio creado.");
       }
       router.refresh();
@@ -199,9 +191,7 @@ export function TestimoniosClient({ testimonials }: { testimonials: Testimonial[
   async function handleDelete(t: Testimonial) {
     if (!confirm(`¿Eliminar el testimonio de "${t.author_name}"?`)) return;
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("testimonials").delete().eq("id", t.id);
-      if (error) throw error;
+      await adminDb.delete("testimonials", t.id);
       setItems((prev) => prev.filter((x) => x.id !== t.id));
       toast.success("Testimonio eliminado.");
       router.refresh();
@@ -216,11 +206,7 @@ export function TestimoniosClient({ testimonials }: { testimonials: Testimonial[
   async function handleToggleActive(t: Testimonial) {
     const newValue = !t.is_active;
     try {
-      const supabase = createClient();
-      await (supabase as any)
-        .from("testimonials")
-        .update({ is_active: newValue })
-        .eq("id", t.id);
+      await adminDb.update("testimonials", t.id, { is_active: newValue });
     } catch {
       // silently fallback
     }

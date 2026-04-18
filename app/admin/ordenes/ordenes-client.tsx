@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { adminDb } from "@/lib/admin-db";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
@@ -132,12 +132,7 @@ export function OrdenesClient({ orders }: { orders: Order[] }) {
   async function handleStatusChange(order: Order, newStatus: Order["status"]) {
     setUpdatingId(order.id);
     try {
-      const supabase = createClient();
-      const { error } = await (supabase as any)
-        .from("orders")
-        .update({ status: newStatus })
-        .eq("id", order.id);
-      if (error) throw error;
+      await adminDb.update("orders", order.id, { status: newStatus });
 
       setItems((prev) =>
         prev.map((o) => (o.id === order.id ? { ...o, status: newStatus } : o))

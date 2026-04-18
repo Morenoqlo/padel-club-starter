@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { adminDb } from "@/lib/admin-db";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
@@ -157,13 +157,8 @@ export function ClasesClient({ classes }: { classes: Class[] }) {
     };
 
     try {
-      const supabase = createClient();
       if (editing) {
-        const { error } = await (supabase as any)
-          .from("classes")
-          .update(payload)
-          .eq("id", editing.id);
-        if (error) throw error;
+        await adminDb.update("classes", editing.id, payload);
         setItems((prev) =>
           prev.map((c) => (c.id === editing.id ? { ...c, ...payload } : c))
         );
@@ -173,13 +168,10 @@ export function ClasesClient({ classes }: { classes: Class[] }) {
           .toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9-]/g, "");
-        const { data, error } = await (supabase as any)
-          .from("classes")
-          .insert({ ...payload, slug, schedule: null })
-          .select()
-          .single();
-        if (error) throw error;
-        setItems((prev) => [data as Class, ...prev]);
+        const data = await adminDb.insert<Class>("classes", {
+          ...payload, slug, schedule: null,
+        });
+        setItems((prev) => [data, ...prev]);
         toast.success("Clase creada.");
       }
       router.refresh();
@@ -208,9 +200,7 @@ export function ClasesClient({ classes }: { classes: Class[] }) {
   async function handleDelete(cls: Class) {
     if (!confirm(`¿Eliminar "${cls.name}"?`)) return;
     try {
-      const supabase = createClient();
-      const { error } = await supabase.from("classes").delete().eq("id", cls.id);
-      if (error) throw error;
+      await adminDb.delete("classes", cls.id);
       setItems((prev) => prev.filter((c) => c.id !== cls.id));
       toast.success("Clase eliminada.");
       router.refresh();

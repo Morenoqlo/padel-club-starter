@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createClient } from "@/lib/supabase/client";
+import { adminDb } from "@/lib/admin-db";
 import { formatPrice } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -184,32 +184,15 @@ export function ProductosClient({ products }: { products: Product[] }) {
     };
 
     try {
-      const supabase = createClient();
-
       if (editing) {
-        const { data, error } = await (supabase as any)
-          .from("products")
-          .update(payload)
-          .eq("id", editing.id)
-          .select()
-          .single();
-
-        if (error) throw error;
-
+        const data = await adminDb.update<Product>("products", editing.id, payload);
         setItems((prev) =>
-          prev.map((p) => (p.id === editing.id ? (data as Product) : p))
+          prev.map((p) => (p.id === editing.id ? data : p))
         );
         toast.success("Producto actualizado.");
       } else {
-        const { data, error } = await (supabase as any)
-          .from("products")
-          .insert(payload)
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        setItems((prev) => [data as Product, ...prev]);
+        const data = await adminDb.insert<Product>("products", payload);
+        setItems((prev) => [data, ...prev]);
         toast.success("Producto creado.");
       }
 
@@ -251,19 +234,11 @@ export function ProductosClient({ products }: { products: Product[] }) {
     if (!confirmed) return;
 
     try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("products")
-        .delete()
-        .eq("id", product.id);
-
-      if (error) throw error;
-
+      await adminDb.delete("products", product.id);
       setItems((prev) => prev.filter((p) => p.id !== product.id));
       toast.success("Producto eliminado.");
       router.refresh();
     } catch {
-      // Demo fallback: optimistic local remove
       setItems((prev) => prev.filter((p) => p.id !== product.id));
       toast.success("Eliminado (modo demo)");
     }
