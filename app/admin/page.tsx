@@ -10,26 +10,25 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// Attempt to load real data; fall back gracefully
+// Usa service client para bypasear RLS y leer todas las tablas
 async function getDashboardStats() {
   try {
-    const { createClient } = await import("@/lib/supabase/server");
-    const supabase = await createClient();
+    const { createServiceClient } = await import("@/lib/supabase/server");
+    const supabase = await createServiceClient();
     const [
       { count: productsCount },
       { count: ordersCount },
       { count: eventsCount },
       { count: classesCount },
     ] = await Promise.all([
-      supabase.from("products").select("*", { count: "exact", head: true }).eq("is_active", true),
-      supabase.from("orders").select("*", { count: "exact", head: true }),
-      supabase.from("events").select("*", { count: "exact", head: true }).eq("is_active", true),
-      supabase.from("classes").select("*", { count: "exact", head: true }).eq("is_active", true),
+      (supabase as any).from("products").select("*", { count: "exact", head: true }).eq("is_active", true),
+      (supabase as any).from("orders").select("*", { count: "exact", head: true }),
+      (supabase as any).from("events").select("*", { count: "exact", head: true }).eq("is_active", true),
+      (supabase as any).from("classes").select("*", { count: "exact", head: true }).eq("is_active", true),
     ]);
     return { productsCount, ordersCount, eventsCount, classesCount };
   } catch {
-    // Dev mode: return mock counts
-    return { productsCount: 4, ordersCount: 12, eventsCount: 3, classesCount: 3 };
+    return { productsCount: 4, ordersCount: 0, eventsCount: 3, classesCount: 3 };
   }
 }
 
