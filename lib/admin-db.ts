@@ -5,9 +5,13 @@
  */
 
 async function request(method: string, body: object) {
+  const secret = process.env.NEXT_PUBLIC_ADMIN_API_SECRET ?? "";
   const res = await fetch("/api/admin/crud", {
     method,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(secret ? { "x-admin-secret": secret } : {}),
+    },
     body: JSON.stringify(body),
   });
   const json = await res.json();

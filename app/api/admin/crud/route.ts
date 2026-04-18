@@ -11,6 +11,18 @@ const ALLOWED_TABLES = [
   "gallery_items",
 ];
 
+/** Verifica que la petición viene del panel admin legítimo */
+function authGuard(req: NextRequest) {
+  const secret = process.env.ADMIN_API_SECRET;
+  // Si no hay secret configurado en el env, lo permitimos (modo dev sin configurar)
+  if (!secret) return null;
+  const header = req.headers.get("x-admin-secret");
+  if (header !== secret) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  return null;
+}
+
 function guard(table: string) {
   if (!ALLOWED_TABLES.includes(table)) {
     return NextResponse.json({ error: "Tabla no permitida" }, { status: 400 });
@@ -19,6 +31,8 @@ function guard(table: string) {
 
 // ── INSERT ────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  const authErr = authGuard(req);
+  if (authErr) return authErr;
   const { table, payload } = await req.json();
   const err = guard(table);
   if (err) return err;
@@ -36,6 +50,8 @@ export async function POST(req: NextRequest) {
 
 // ── UPDATE ────────────────────────────────────────────────────
 export async function PUT(req: NextRequest) {
+  const authErr = authGuard(req);
+  if (authErr) return authErr;
   const { table, id, payload } = await req.json();
   const err = guard(table);
   if (err) return err;
@@ -54,6 +70,8 @@ export async function PUT(req: NextRequest) {
 
 // ── DELETE ────────────────────────────────────────────────────
 export async function DELETE(req: NextRequest) {
+  const authErr = authGuard(req);
+  if (authErr) return authErr;
   const { table, id } = await req.json();
   const err = guard(table);
   if (err) return err;
