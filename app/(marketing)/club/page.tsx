@@ -34,19 +34,19 @@ const TEAM = [
     name: "Carlos Mendoza",
     role: "Director Técnico",
     bio: "Ex jugador profesional con 15 años de experiencia. Formado en la Academia Nacional de Pádel.",
-    image: "https://placehold.co/400x400/0A0A0A/22C55E?text=CM",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&q=80&auto=format&fit=crop&crop=face",
   },
   {
     name: "María González",
     role: "Head Coach — Academia",
     bio: "Instructora certificada nivel 3. Especialista en formación infantil y principiantes.",
-    image: "https://placehold.co/400x400/22C55E/0A0A0A?text=MG",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&q=80&auto=format&fit=crop&crop=face",
   },
   {
     name: "Diego Fernández",
     role: "Coach Alto Rendimiento",
     bio: "Preparador físico y técnico para jugadores competitivos. +200 torneos disputados.",
-    image: "https://placehold.co/400x400/111111/FFFFFF?text=DF",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&q=80&auto=format&fit=crop&crop=face",
   },
 ];
 
@@ -119,7 +119,7 @@ export default function ClubPage() {
             <div className="group relative overflow-hidden rounded-3xl bg-foreground">
               <div className="relative h-64">
                 <Image
-                  src="https://placehold.co/800x400/0A0A0A/22C55E?text=Indoor"
+                  src="https://images.unsplash.com/photo-1622279457486-62dbd631b18e?w=800&q=80&auto=format&fit=crop"
                   alt="Canchas Indoor"
                   fill
                   unoptimized
@@ -156,7 +156,7 @@ export default function ClubPage() {
             <div className="group relative overflow-hidden rounded-3xl bg-foreground">
               <div className="relative h-64">
                 <Image
-                  src="https://placehold.co/800x400/22C55E/0A0A0A?text=Outdoor"
+                  src="https://images.unsplash.com/photo-1568698013316-c3a7f5e65f8d?w=800&q=80&auto=format&fit=crop"
                   alt="Canchas Outdoor"
                   fill
                   unoptimized

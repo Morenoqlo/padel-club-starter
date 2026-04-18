@@ -16,7 +16,7 @@ const courtTypes = [
     description:
       "Canchas cubiertas con temperatura controlada. Juega sin importar el clima, con iluminación profesional de competición.",
     features: ["Cristal panorámico", "Climatización", "Iluminación LED", "Sonorización"],
-    image: "https://placehold.co/700x500/0A0A0A/22C55E?text=Indoor",
+    image: "https://images.unsplash.com/photo-1622279457486-62dbd631b18e?w=800&q=80&auto=format&fit=crop",
     accent: true,
   },
   {
@@ -26,7 +26,7 @@ const courtTypes = [
     description:
       "Canchas al aire libre con vistas panorámicas. Césped artificial de última generación y malla perimetral profesional.",
     features: ["Pared de cristal", "Drenaje perfecto", "Iluminación nocturna", "Zona de espera"],
-    image: "https://placehold.co/700x500/22C55E/0A0A0A?text=Outdoor",
+    image: "https://images.unsplash.com/photo-1568698013316-c3a7f5e65f8d?w=800&q=80&auto=format&fit=crop",
     accent: false,
   },
 ];

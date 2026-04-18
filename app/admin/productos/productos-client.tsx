@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table";
 import { adminDb } from "@/lib/admin-db";
 import { formatPrice } from "@/lib/utils";
+import { ImageUpload } from "@/components/shared/image-upload";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,6 +55,7 @@ type FormState = {
   compare_at_price: string;
   category: string;
   stock_quantity: string;
+  image_url: string;
   is_active: boolean;
   is_featured: boolean;
 };
@@ -86,6 +88,7 @@ const EMPTY_FORM: FormState = {
   compare_at_price: "",
   category: "",
   stock_quantity: "",
+  image_url: "",
   is_active: true,
   is_featured: false,
 };
@@ -126,6 +129,7 @@ export function ProductosClient({ products }: { products: Product[] }) {
       compare_at_price: product.compare_at_price?.toString() ?? "",
       category: product.category ?? "",
       stock_quantity: product.stock_quantity?.toString() ?? "",
+      image_url: product.images?.[0] ?? "",
       is_active: product.is_active,
       is_featured: product.is_featured,
     });
@@ -179,6 +183,7 @@ export function ProductosClient({ products }: { products: Product[] }) {
       compare_at_price: form.compare_at_price ? Number(form.compare_at_price) : null,
       category: form.category || null,
       stock_quantity: form.stock_quantity ? Number(form.stock_quantity) : null,
+      images: form.image_url ? [form.image_url] : [],
       is_active: form.is_active,
       is_featured: form.is_featured,
     };
@@ -499,6 +504,17 @@ export function ProductosClient({ products }: { products: Product[] }) {
                   onChange={(e) => setField("stock_quantity", e.target.value)}
                 />
               </div>
+            </div>
+
+            {/* Imagen */}
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium">Imagen del producto</label>
+              <ImageUpload
+                value={form.image_url}
+                onChange={(url) => setField("image_url", url)}
+                folder="products"
+                aspectRatio="square"
+              />
             </div>
 
             {/* Checkboxes */}

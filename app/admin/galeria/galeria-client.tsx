@@ -17,6 +17,7 @@ import {
 import {
   Plus, Pencil, Trash2, Star, ImageIcon, Eye, EyeOff,
 } from "lucide-react";
+import { ImageUpload } from "@/components/shared/image-upload";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -158,19 +159,8 @@ export function GaleriaClient({ items: initial }: { items: GalleryItem[] }) {
       }
       router.refresh();
       handleClose();
-    } catch {
-      if (editing) {
-        setItems((prev) =>
-          prev.map((i) => (i.id === editing.id ? { ...i, ...payload } : i))
-        );
-      } else {
-        setItems((prev) => [
-          ...prev,
-          { id: crypto.randomUUID(), created_at: new Date().toISOString(), metadata: null, ...payload },
-        ]);
-      }
-      toast.success("Guardado (modo demo).");
-      handleClose();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al guardar. Intenta de nuevo.");
     } finally {
       setSaving(false);
     }
@@ -182,12 +172,12 @@ export function GaleriaClient({ items: initial }: { items: GalleryItem[] }) {
     if (!confirm(`¿Eliminar "${item.title ?? "esta imagen"}"?`)) return;
     try {
       await adminDb.delete("gallery_items", item.id);
+      setItems((prev) => prev.filter((i) => i.id !== item.id));
       toast.success("Imagen eliminada.");
-    } catch {
-      toast.success("Eliminada (modo demo).");
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al eliminar. Intenta de nuevo.");
     }
-    setItems((prev) => prev.filter((i) => i.id !== item.id));
-    router.refresh();
   }
 
   // ── Toggle activo ────────────────────────────────────────────
@@ -382,32 +372,17 @@ export function GaleriaClient({ items: initial }: { items: GalleryItem[] }) {
           </DialogHeader>
 
           <div className="space-y-4 py-2">
-            {/* URL imagen */}
+            {/* Imagen */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">
-                URL de imagen <span className="text-destructive">*</span>
+                Imagen <span className="text-destructive">*</span>
               </label>
-              <input
-                type="url"
-                className={F}
-                placeholder="https://..."
+              <ImageUpload
                 value={form.image_url}
-                onChange={(e) => setField("image_url", e.target.value)}
+                onChange={(url) => setField("image_url", url)}
+                folder="gallery"
+                aspectRatio="video"
               />
-              {/* Preview */}
-              {form.image_url && (
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-secondary mt-2">
-                  <Image
-                    src={form.image_url}
-                    alt="Preview"
-                    fill
-                    unoptimized
-                    className="object-cover"
-                    sizes="480px"
-                    onError={() => {}}
-                  />
-                </div>
-              )}
             </div>
 
             {/* Título */}
