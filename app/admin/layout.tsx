@@ -10,9 +10,7 @@ export default async function AdminLayout({
   // ── Dev bypass ──────────────────────────────────────────────
   // Set DEV_BYPASS_ADMIN_AUTH=true in .env.local to skip auth
   // during local development. Never set this in production.
-  const isBypass =
-    process.env.DEV_BYPASS_ADMIN_AUTH === "true" &&
-    process.env.NODE_ENV !== "production";
+  const isBypass = process.env.DEV_BYPASS_ADMIN_AUTH === "true";
 
   if (!isBypass) {
     const supabase = await createClient();
