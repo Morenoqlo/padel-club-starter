@@ -198,26 +198,8 @@ export function ProductosClient({ products }: { products: Product[] }) {
 
       router.refresh();
       closeModal();
-    } catch {
-      // Demo fallback: optimistic local update
-      if (editing) {
-        setItems((prev) =>
-          prev.map((p) =>
-            p.id === editing.id ? { ...editing, ...payload } : p
-          )
-        );
-      } else {
-        const fakeProduct: Product = {
-          id: crypto.randomUUID(),
-          images: null,
-          sku: null,
-          ...payload,
-        };
-        setItems((prev) => [fakeProduct, ...prev]);
-      }
-
-      toast.success("Guardado (modo demo)");
-      closeModal();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al guardar. Intenta de nuevo.");
     } finally {
       setSaving(false);
     }
@@ -238,9 +220,8 @@ export function ProductosClient({ products }: { products: Product[] }) {
       setItems((prev) => prev.filter((p) => p.id !== product.id));
       toast.success("Producto eliminado.");
       router.refresh();
-    } catch {
-      setItems((prev) => prev.filter((p) => p.id !== product.id));
-      toast.success("Eliminado (modo demo)");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al eliminar. Intenta de nuevo.");
     }
   }
 

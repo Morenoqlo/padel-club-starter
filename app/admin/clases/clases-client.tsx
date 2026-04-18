@@ -176,22 +176,8 @@ export function ClasesClient({ classes }: { classes: Class[] }) {
       }
       router.refresh();
       handleClose();
-    } catch {
-      toast.success("Guardado (modo demo)");
-      if (editing) {
-        setItems((prev) =>
-          prev.map((c) => (c.id === editing.id ? { ...c, ...payload } : c))
-        );
-      } else {
-        const newItem: Class = {
-          id: crypto.randomUUID(),
-          slug: form.name.toLowerCase().replace(/\s+/g, "-"),
-          schedule: null,
-          ...payload,
-        };
-        setItems((prev) => [newItem, ...prev]);
-      }
-      handleClose();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al guardar. Intenta de nuevo.");
     } finally {
       setSaving(false);
     }
@@ -204,9 +190,8 @@ export function ClasesClient({ classes }: { classes: Class[] }) {
       setItems((prev) => prev.filter((c) => c.id !== cls.id));
       toast.success("Clase eliminada.");
       router.refresh();
-    } catch {
-      setItems((prev) => prev.filter((c) => c.id !== cls.id));
-      toast.success("Guardado (modo demo)");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al eliminar. Intenta de nuevo.");
     }
   }
 

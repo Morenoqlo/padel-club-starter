@@ -178,25 +178,8 @@ export function EventosClient({ events }: { events: Event[] }) {
       }
       router.refresh();
       handleClose();
-    } catch {
-      toast.success("Guardado (modo demo)");
-      if (editing) {
-        setItems((prev) =>
-          prev.map((ev) =>
-            ev.id === editing.id ? { ...ev, ...payload } : ev
-          )
-        );
-      } else {
-        const newItem: Event = {
-          id: crypto.randomUUID(),
-          slug: form.title.toLowerCase().replace(/\s+/g, "-"),
-          current_participants: 0,
-          image_url: null,
-          ...payload,
-        };
-        setItems((prev) => [newItem, ...prev]);
-      }
-      handleClose();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al guardar. Intenta de nuevo.");
     } finally {
       setSaving(false);
     }
@@ -209,9 +192,8 @@ export function EventosClient({ events }: { events: Event[] }) {
       setItems((prev) => prev.filter((ev) => ev.id !== event.id));
       toast.success("Evento eliminado.");
       router.refresh();
-    } catch {
-      setItems((prev) => prev.filter((ev) => ev.id !== event.id));
-      toast.success("Guardado (modo demo)");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al eliminar. Intenta de nuevo.");
     }
   }
 

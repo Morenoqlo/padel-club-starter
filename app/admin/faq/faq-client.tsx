@@ -136,20 +136,8 @@ export function FaqClient({ faqs }: { faqs: FAQ[] }) {
       }
       router.refresh();
       handleClose();
-    } catch {
-      toast.success("Guardado (modo demo)");
-      if (editing) {
-        setItems((prev) =>
-          prev.map((f) => (f.id === editing.id ? { ...f, ...payload } : f))
-        );
-      } else {
-        const newItem: FAQ = {
-          id: crypto.randomUUID(),
-          ...payload,
-        };
-        setItems((prev) => [...prev, newItem]);
-      }
-      handleClose();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al guardar. Intenta de nuevo.");
     } finally {
       setSaving(false);
     }
@@ -162,9 +150,8 @@ export function FaqClient({ faqs }: { faqs: FAQ[] }) {
       setItems((prev) => prev.filter((f) => f.id !== faq.id));
       toast.success("FAQ eliminada.");
       router.refresh();
-    } catch {
-      setItems((prev) => prev.filter((f) => f.id !== faq.id));
-      toast.success("Guardado (modo demo)");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al eliminar. Intenta de nuevo.");
     }
   }
 

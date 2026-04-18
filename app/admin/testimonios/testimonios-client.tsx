@@ -164,23 +164,8 @@ export function TestimoniosClient({ testimonials }: { testimonials: Testimonial[
       }
       router.refresh();
       handleClose();
-    } catch {
-      // Demo fallback
-      if (editing) {
-        setItems((prev) =>
-          prev.map((t) => (t.id === editing.id ? { ...t, ...payload } : t))
-        );
-      } else {
-        const newItem: Testimonial = {
-          id: crypto.randomUUID(),
-          created_at: new Date().toISOString(),
-          author_image: null,
-          ...payload,
-        };
-        setItems((prev) => [newItem, ...prev]);
-      }
-      toast.success("Guardado (modo demo).");
-      handleClose();
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al guardar. Intenta de nuevo.");
     } finally {
       setSaving(false);
     }
@@ -195,9 +180,8 @@ export function TestimoniosClient({ testimonials }: { testimonials: Testimonial[
       setItems((prev) => prev.filter((x) => x.id !== t.id));
       toast.success("Testimonio eliminado.");
       router.refresh();
-    } catch {
-      setItems((prev) => prev.filter((x) => x.id !== t.id));
-      toast.success("Eliminado (modo demo).");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Error al eliminar. Intenta de nuevo.");
     }
   }
 
