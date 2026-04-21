@@ -119,7 +119,7 @@ export default function ClubPage() {
             <div className="group relative overflow-hidden rounded-3xl bg-foreground">
               <div className="relative h-64">
                 <Image
-                  src="https://images.unsplash.com/photo-1622279457486-62dbd631b18e?w=800&q=80&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&q=80&auto=format&fit=crop"
                   alt="Canchas Indoor"
                   fill
                   unoptimized
@@ -156,7 +156,7 @@ export default function ClubPage() {
             <div className="group relative overflow-hidden rounded-3xl bg-foreground">
               <div className="relative h-64">
                 <Image
-                  src="https://images.unsplash.com/photo-1568698013316-c3a7f5e65f8d?w=800&q=80&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1611457194403-d3aca4cf9d11?w=800&q=80&auto=format&fit=crop"
                   alt="Canchas Outdoor"
                   fill
                   unoptimized
