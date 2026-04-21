@@ -17,9 +17,12 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { StripePaymentForm } from "@/components/checkout/stripe-payment-form";
 
-const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-  : null;
+// Publishable key is safe to hardcode (it's public by design)
+const STRIPE_PK =
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
+  "pk_test_51TOTp5DBhOhpEtKGfCm546iH76m0syya2UcmeeRJDWgV4rbVqOrBNyCq9lUEbvTCBKA5gr6hfmCKPgdFFcaYQR2e00K4I1IIYn";
+
+const stripePromise = loadStripe(STRIPE_PK);
 
 const ALL_PAYMENT_PROVIDERS = [
   {
@@ -28,7 +31,7 @@ const ALL_PAYMENT_PROVIDERS = [
     description: "Visa, Mastercard, American Express",
     icon: CreditCard,
     badge: "Recomendado" as const,
-    enabled: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    enabled: true,
   },
   {
     id: "mercadopago" as const,

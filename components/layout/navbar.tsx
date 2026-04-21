@@ -65,10 +65,14 @@ export function Navbar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-foreground",
-                pathname === item.href
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                "text-sm font-medium transition-colors",
+                scrolled
+                  ? pathname === item.href
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                  : pathname === item.href
+                    ? "text-white"
+                    : "text-white/50 hover:text-white"
               )}
             >
               {item.label}
