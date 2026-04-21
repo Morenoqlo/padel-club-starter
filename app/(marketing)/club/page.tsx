@@ -123,9 +123,9 @@ export default function ClubPage() {
                   alt="Canchas Indoor"
                   fill
                   unoptimized
-                  className="object-cover opacity-60"
+                  className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/30 to-transparent" />
               </div>
               <div className="p-8">
                 <div className="mb-4 flex items-center gap-3">
@@ -160,9 +160,9 @@ export default function ClubPage() {
                   alt="Canchas Outdoor"
                   fill
                   unoptimized
-                  className="object-cover opacity-60"
+                  className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/30 to-transparent" />
               </div>
               <div className="p-8">
                 <div className="mb-4 flex items-center gap-3">

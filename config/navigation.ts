@@ -4,9 +4,9 @@ export const navigationConfig = {
     { label: "El Club", href: "/club" },
     { label: "Reservas", href: "/reservas" },
     { label: "Clases", href: "/clases" },
+    { label: "Tienda", href: "/tienda" },
     { label: "Eventos", href: "/eventos" },
     { label: "Galería", href: "/galeria" },
-    { label: "Tienda", href: "/tienda" },
     { label: "Contacto", href: "/contacto" },
   ],
   footer: {

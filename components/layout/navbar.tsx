@@ -59,8 +59,8 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 md:flex">
-          {navigationConfig.main.slice(0, 6).map((item) => (
+        <nav className="hidden items-center gap-5 lg:flex">
+          {navigationConfig.main.slice(0, 7).map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -96,7 +96,7 @@ export function Navbar() {
           </button>
 
           {/* CTA */}
-          <Button asChild size="sm" className="hidden md:inline-flex ml-2">
+          <Button asChild size="sm" className="hidden lg:inline-flex ml-2">
             <a
               href={brandConfig.booking.externalUrl}
               target="_blank"
@@ -109,7 +109,7 @@ export function Navbar() {
           {/* Mobile menu toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-secondary transition-colors md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-secondary transition-colors lg:hidden"
             aria-label="Menú"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -125,7 +125,7 @@ export function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="border-b border-border bg-background md:hidden"
+            className="border-b border-border bg-background lg:hidden"
           >
             <nav className="container flex flex-col gap-1 py-4">
               {navigationConfig.main.map((item) => (

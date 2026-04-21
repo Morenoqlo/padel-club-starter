@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { sendOrderConfirmation } from "@/lib/email";
 
 /**
  * Stripe Webhook Handler
@@ -73,6 +74,9 @@ export async function POST(req: NextRequest) {
 
           // Descontar stock de los productos
           await decrementStock(supabase, orderId);
+
+          // Enviar email de confirmación al cliente
+          await sendOrderConfirmationEmail(supabase, orderId);
         }
         break;
       }
@@ -125,6 +129,44 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ received: true });
+}
+
+/** Envía email de confirmación de orden al cliente */
+async function sendOrderConfirmationEmail(supabase: any, orderId: string) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  try {
+    const { data: order } = await supabase
+      .from("orders")
+      .select("id, customer_name, customer_email, total")
+      .eq("id", orderId)
+      .single();
+
+    if (!order) return;
+
+    const { data: items } = await supabase
+      .from("order_items")
+      .select("product_name, quantity, unit_price")
+      .eq("order_id", orderId);
+
+    if (!items || items.length === 0) return;
+
+    await sendOrderConfirmation({
+      orderNumber: orderId,
+      customerName: order.customer_name,
+      customerEmail: order.customer_email,
+      items: items.map((i: any) => ({
+        name: i.product_name,
+        quantity: i.quantity,
+        price: i.unit_price,
+      })),
+      total: order.total,
+    });
+
+    console.log(`[Stripe] Email de confirmación enviado a ${order.customer_email}`);
+  } catch (err) {
+    console.error("[Stripe] Error enviando email de confirmación:", err);
+  }
 }
 
 /** Descuenta stock de los productos de una orden */

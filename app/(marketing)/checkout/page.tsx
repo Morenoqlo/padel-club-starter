@@ -13,21 +13,31 @@ import {
   ChevronRight, Lock,
 } from "lucide-react";
 import type { CheckoutFormData } from "@/types";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { StripePaymentForm } from "@/components/checkout/stripe-payment-form";
 
-const PAYMENT_PROVIDERS = [
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : null;
+
+const ALL_PAYMENT_PROVIDERS = [
   {
     id: "stripe" as const,
     name: "Tarjeta de crédito / débito",
     description: "Visa, Mastercard, American Express",
     icon: CreditCard,
-    badge: null,
+    badge: "Recomendado" as const,
+    enabled: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   {
     id: "mercadopago" as const,
     name: "Mercado Pago",
     description: "Paga en cuotas sin interés",
     icon: Smartphone,
-    badge: "Popular",
+    badge: null,
+    // Only show if explicitly enabled via public env var
+    enabled: process.env.NEXT_PUBLIC_MERCADOPAGO_ENABLED === "true",
   },
   {
     id: "transbank" as const,
@@ -35,8 +45,11 @@ const PAYMENT_PROVIDERS = [
     description: "Débito y crédito chileno",
     icon: Shield,
     badge: null,
+    enabled: process.env.NEXT_PUBLIC_TRANSBANK_ENABLED === "true",
   },
 ];
+
+const PAYMENT_PROVIDERS = ALL_PAYMENT_PROVIDERS.filter((p) => p.enabled);
 
 const CHILEAN_REGIONS = [
   "Región Metropolitana",
@@ -78,13 +91,15 @@ export default function CheckoutPage() {
     city: "",
     region: "Región Metropolitana",
     postalCode: "",
-    paymentProvider: "mercadopago",
+    paymentProvider: "stripe",
     notes: "",
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(null);
+  const [stripeOrderId, setStripeOrderId] = useState<string | null>(null);
 
   const shipping = 0; // free shipping
   const total = subtotal + shipping;
@@ -110,26 +125,70 @@ export default function CheckoutPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, form }),
+        body: JSON.stringify({
+          items: items.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+          customer: {
+            email: form.email,
+            firstName: form.firstName,
+            lastName: form.lastName,
+            phone: form.phone || undefined,
+          },
+          shippingAddress: {
+            address: form.address,
+            city: form.city,
+            region: form.region,
+          },
+          paymentProvider: form.paymentProvider,
+        }),
       });
-
-      if (!res.ok) throw new Error("Error al procesar el pedido");
 
       const data = await res.json();
 
-      // If provider returns a redirect URL (Stripe/MP/Transbank), redirect there
-      if (data?.url) {
-        window.location.href = data.url;
+      if (!res.ok) {
+        throw new Error(data?.error ?? "Error al procesar el pedido");
+      }
+
+      // MercadoPago — redirect to initPoint
+      if (data?.provider === "mercadopago" && data?.initPoint) {
+        clearCart();
+        window.location.href = data.initPoint;
         return;
       }
 
-      // Otherwise show success
-      clearCart();
-      setSubmitted(true);
-    } catch {
-      // For demo purposes, show success even if API fails
-      clearCart();
-      setSubmitted(true);
+      // Transbank — redirect with token to Webpay URL
+      if (data?.provider === "transbank" && data?.url && data?.token) {
+        clearCart();
+        // Transbank requires a POST form redirect
+        const form_el = document.createElement("form");
+        form_el.method = "POST";
+        form_el.action = data.url;
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "token_ws";
+        input.value = data.token;
+        form_el.appendChild(input);
+        document.body.appendChild(form_el);
+        form_el.submit();
+        return;
+      }
+
+      // Stripe — show embedded payment form with clientSecret
+      if (data?.provider === "stripe" && data?.clientSecret) {
+        setStripeClientSecret(data.clientSecret);
+        setStripeOrderId(data.orderId);
+        return;
+      }
+
+      // If we get here, something went wrong — response didn't match any provider
+      throw new Error(
+        `La pasarela de pago "${form.paymentProvider}" no está configurada correctamente. Por favor intenta con otro método.`
+      );
+    } catch (err: any) {
+      alert(err?.message ?? "Error al procesar el pedido. Intenta de nuevo.");
     } finally {
       setIsSubmitting(false);
     }
@@ -198,6 +257,57 @@ export default function CheckoutPage() {
             <ArrowLeft className="h-4 w-4" />
             Ir a la tienda
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Stripe payment form ───────────────────────────────────────
+  if (stripeClientSecret && stripePromise) {
+    return (
+      <div className="pt-20 min-h-screen bg-secondary/30">
+        <div className="container py-10 md:py-14 max-w-xl mx-auto">
+          <div className="mb-8">
+            <button
+              onClick={() => setStripeClientSecret(null)}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Volver al checkout
+            </button>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-background p-6 md:p-8">
+            <h1 className="font-display text-2xl font-bold mb-2">Ingresa tu tarjeta</h1>
+            <p className="text-sm text-muted-foreground mb-6">
+              Total a pagar: <strong>{formatPrice(total)}</strong>
+            </p>
+
+            <Elements
+              stripe={stripePromise}
+              options={{
+                clientSecret: stripeClientSecret,
+                appearance: {
+                  theme: "night",
+                  variables: {
+                    colorPrimary: "#22C55E",
+                    borderRadius: "12px",
+                    fontFamily: "inherit",
+                  },
+                },
+                locale: "es-419",
+              }}
+            >
+              <StripePaymentForm
+                total={total}
+                onSuccess={() => {
+                  clearCart();
+                  setSubmitted(true);
+                }}
+                onError={(msg) => alert(msg)}
+              />
+            </Elements>
+          </div>
         </div>
       </div>
     );

@@ -24,15 +24,28 @@ export async function getProducts(options?: {
 
 export async function getProductBySlug(slug: string): Promise<ProductWithVariants | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+
+  // Fetch product and variants separately so one failing doesn't kill the other
+  const { data: product, error } = await supabase
     .from("products")
-    .select("*, variants:product_variants(*)")
+    .select("*")
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
 
-  if (error) return null;
-  return data as ProductWithVariants;
+  if (error || !product) return null;
+
+  // Fetch variants (non-critical — empty array if fails)
+  const { data: variants } = await supabase
+    .from("product_variants")
+    .select("*")
+    .eq("product_id", (product as { id: string }).id)
+    .eq("is_active", true);
+
+  return {
+    ...(product as Product),
+    variants: (variants as ProductWithVariants["variants"]) ?? [],
+  };
 }
 
 export async function getProductCategories(): Promise<string[]> {

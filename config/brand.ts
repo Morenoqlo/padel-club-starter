@@ -50,7 +50,7 @@ export const brandConfig = {
 
   // ── Contact ───────────────────────────────
   contact: {
-    email: "contacto@padelproclub.com",
+    email: "alexander.rojas2205@gmail.com",
     phone: "+56 9 1234 5678",
     whatsapp: "+56912345678",
     whatsappMessage: "Hola! Me interesa reservar una cancha.",
