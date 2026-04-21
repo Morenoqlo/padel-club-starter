@@ -61,17 +61,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: uploadError.message }, { status: 500 });
     }
 
-    // Try public URL first; fall back to signed URL (10 years) if bucket is private
     const { data: { publicUrl } } = supabase.storage.from(BUCKET).getPublicUrl(path);
 
-    // Check if public URL works by testing the bucket visibility
-    const { data: signedData, error: signErr } = await supabase.storage
-      .from(BUCKET)
-      .createSignedUrl(path, 60 * 60 * 24 * 365 * 10); // 10 years
-
-    const url = signErr ? publicUrl : (signedData?.signedUrl ?? publicUrl);
-
-    return NextResponse.json({ url, path });
+    return NextResponse.json({ url: publicUrl, path });
   } catch (err: any) {
     console.error("[Upload API]", err);
     return NextResponse.json({ error: err?.message ?? "Error al subir" }, { status: 500 });

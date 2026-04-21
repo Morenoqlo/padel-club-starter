@@ -16,7 +16,7 @@ const courtTypes = [
     description:
       "Canchas cubiertas con temperatura controlada. Juega sin importar el clima, con iluminación profesional de competición.",
     features: ["Cristal panorámico", "Climatización", "Iluminación LED", "Sonorización"],
-    image: "https://mcmeoameblplqqdiawjn.supabase.co/storage/v1/object/sign/Fotos/Indoor.jpeg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNzA2OGYzMS0yYWQ5LTQxODQtOWYxYi05MTkyYTY0NDYzYmEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJGb3Rvcy9JbmRvb3IuanBlZyIsImlhdCI6MTc3Njc5ODYyNywiZXhwIjoxNzc5MzkwNjI3fQ.x6-7JWG-tTvidNMmRzQcfEG5vqVYTDPHtyGk1k0AU7g",
+    image: "https://mcmeoameblplqqdiawjn.supabase.co/storage/v1/object/public/Fotos/Indoor.jpeg",
     accent: true,
   },
   {
@@ -26,7 +26,7 @@ const courtTypes = [
     description:
       "Canchas al aire libre con vistas panorámicas. Césped artificial de última generación y malla perimetral profesional.",
     features: ["Pared de cristal", "Drenaje perfecto", "Iluminación nocturna", "Zona de espera"],
-    image: "https://mcmeoameblplqqdiawjn.supabase.co/storage/v1/object/sign/Fotos/Outdoor.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNzA2OGYzMS0yYWQ5LTQxODQtOWYxYi05MTkyYTY0NDYzYmEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJGb3Rvcy9PdXRkb29yLmpwZyIsImlhdCI6MTc3Njc5ODYzNywiZXhwIjoxODA4MzM0NjM3fQ.Nu1PpjCRk8gO-VTXSDUHvr3yS83sXPhNosMYuPzv_dg",
+    image: "https://mcmeoameblplqqdiawjn.supabase.co/storage/v1/object/public/Fotos/Outdoor.jpg",
     accent: false,
   },
 ];
