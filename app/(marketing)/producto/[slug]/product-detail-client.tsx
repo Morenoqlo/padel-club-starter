@@ -19,8 +19,8 @@ export function ProductDetailClient({ product }: Props) {
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
 
-  const images = Array.isArray(images) ? images : [];
-  const tags = Array.isArray(product.tags) ? product.tags : [];
+  const images: string[] = Array.isArray(product.images) ? (product.images as string[]) : [];
+  const tags: string[] = Array.isArray(product.tags) ? (product.tags as string[]) : [];
   const variants = Array.isArray(product.variants) ? product.variants : [];
 
   const variantGroups = variants.reduce<Record<string, typeof variants>>(
