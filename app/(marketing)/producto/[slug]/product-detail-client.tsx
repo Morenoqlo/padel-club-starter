@@ -19,7 +19,11 @@ export function ProductDetailClient({ product }: Props) {
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
 
-  const variantGroups = product.variants.reduce<Record<string, typeof product.variants>>(
+  const images = Array.isArray(images) ? images : [];
+  const tags = Array.isArray(product.tags) ? product.tags : [];
+  const variants = Array.isArray(product.variants) ? product.variants : [];
+
+  const variantGroups = variants.reduce<Record<string, typeof variants>>(
     (acc, v) => {
       if (!acc[v.name]) acc[v.name] = [];
       acc[v.name].push(v);
@@ -35,7 +39,7 @@ export function ProductDetailClient({ product }: Props) {
       name: product.name,
       price: product.price,
       quantity: 1,
-      image: product.images[0] ?? "",
+      image: images[0] ?? "",
       slug: product.slug,
     });
     setAdded(true);
@@ -57,17 +61,17 @@ export function ProductDetailClient({ product }: Props) {
         {/* Images */}
         <div className="space-y-3">
           <div className="aspect-square overflow-hidden rounded-2xl bg-secondary">
-            {product.images[activeImage] && (
+            {images[activeImage] && (
               <img
-                src={product.images[activeImage]}
+                src={images[activeImage]}
                 alt={product.name}
                 className="h-full w-full object-cover"
               />
             )}
           </div>
-          {product.images.length > 1 && (
+          {images.length > 1 && (
             <div className="flex gap-2">
-              {product.images.map((img, i) => (
+              {images.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveImage(i)}
@@ -148,9 +152,9 @@ export function ProductDetailClient({ product }: Props) {
             )}
           </Button>
 
-          {product.tags.length > 0 && (
+          {tags.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-2">
-              {product.tags.map((tag) => (
+              {tags.map((tag) => (
                 <span
                   key={tag}
                   className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground"

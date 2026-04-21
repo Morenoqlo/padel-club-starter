@@ -42,8 +42,11 @@ export async function getProductBySlug(slug: string): Promise<ProductWithVariant
     .eq("product_id", (product as { id: string }).id)
     .eq("is_active", true);
 
+  const p = product as Product;
   return {
-    ...(product as Product),
+    ...p,
+    images: Array.isArray(p.images) ? p.images : [],
+    tags: Array.isArray(p.tags) ? p.tags : [],
     variants: (variants as ProductWithVariants["variants"]) ?? [],
   };
 }
