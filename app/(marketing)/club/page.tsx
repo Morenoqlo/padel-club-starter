@@ -118,12 +118,11 @@ export default function ClubPage() {
             {/* Indoor */}
             <div className="group relative overflow-hidden rounded-3xl bg-foreground">
               <div className="relative h-64">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&q=80&auto=format&fit=crop"
                   alt="Canchas Indoor"
-                  fill
-                  unoptimized
-                  className="object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/30 to-transparent" />
               </div>
@@ -155,12 +154,11 @@ export default function ClubPage() {
             {/* Outdoor */}
             <div className="group relative overflow-hidden rounded-3xl bg-foreground">
               <div className="relative h-64">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="https://images.unsplash.com/photo-1611457194403-d3aca4cf9d11?w=800&q=80&auto=format&fit=crop"
                   alt="Canchas Outdoor"
-                  fill
-                  unoptimized
-                  className="object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/30 to-transparent" />
               </div>
@@ -223,12 +221,11 @@ export default function ClubPage() {
             {TEAM.map((member) => (
               <div key={member.name} className="group rounded-2xl border border-border bg-background overflow-hidden hover:border-accent/30 transition-colors">
                 <div className="relative h-52 overflow-hidden bg-secondary">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={member.image}
                     alt={member.name}
-                    fill
-                    unoptimized
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <div className="p-5">
