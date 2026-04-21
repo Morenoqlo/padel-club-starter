@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Note: Some Supabase type inference is suppressed here because this route
 // requires a real Supabase connection. Types are verified at runtime.

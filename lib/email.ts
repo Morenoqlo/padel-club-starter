@@ -6,7 +6,12 @@
 import { Resend } from "resend";
 import { brandConfig } from "@/config/brand";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy init — do NOT instantiate at module level (breaks Next.js build)
+function getResend() {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) throw new Error("RESEND_API_KEY is not set");
+  return new Resend(key);
+}
 const FROM = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
 const TO_CLUB = brandConfig.contact.email;
 
@@ -120,7 +125,7 @@ export async function sendContactEmail(data: ContactEmailData) {
     </a>
   `;
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: [TO_CLUB],
     replyTo: data.email,
@@ -152,7 +157,7 @@ export async function sendContactAutoReply(data: ContactEmailData) {
     </a>
   `;
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: [data.email],
     subject: `Recibimos tu mensaje — ${brandConfig.name}`,
@@ -221,7 +226,7 @@ export async function sendOrderConfirmation(data: OrderConfirmationData) {
     </a>
   `;
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: [data.customerEmail],
     subject: `Orden confirmada #${data.orderNumber.slice(0, 8).toUpperCase()} — ${brandConfig.name}`,
