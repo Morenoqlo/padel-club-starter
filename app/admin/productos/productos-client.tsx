@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -274,13 +273,11 @@ export function ProductosClient({ products }: { products: Product[] }) {
                   <div className="flex items-center gap-3">
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-secondary">
                       {product.images?.[0] ? (
-                        <Image
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
                           src={product.images[0]}
                           alt={product.name}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                          sizes="40px"
+                          className="h-full w-full object-cover"
                         />
                       ) : (
                         <Package className="h-5 w-5 m-auto mt-2.5 text-muted-foreground" />
