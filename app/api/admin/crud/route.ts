@@ -10,6 +10,7 @@ const ALLOWED_TABLES = [
   "testimonials",
   "orders",
   "gallery_items",
+  "team_members",
 ];
 
 /** Verifica que la petición viene de un admin autenticado */
