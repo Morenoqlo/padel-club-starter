@@ -11,11 +11,12 @@ import { formatPrice } from "@/lib/utils";
 
 interface StripePaymentFormProps {
   total: number;
-  onSuccess: () => void;
+  orderId: string;
+  onClearCart: () => void;
   onError: (msg: string) => void;
 }
 
-export function StripePaymentForm({ total, onSuccess, onError }: StripePaymentFormProps) {
+export function StripePaymentForm({ total, orderId, onClearCart, onError }: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,18 +27,21 @@ export function StripePaymentForm({ total, onSuccess, onError }: StripePaymentFo
 
     setIsLoading(true);
     try {
-      const { error } = await stripe.confirmPayment({
+      const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/checkout/success`,
+          // Fallback redirect for 3D Secure / bank redirects
+          return_url: `${window.location.origin}/checkout/success?order=${orderId}`,
         },
         redirect: "if_required",
       });
 
       if (error) {
         onError(error.message ?? "Error al procesar el pago");
-      } else {
-        onSuccess();
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        // Payment confirmed without redirect — navigate to success page
+        onClearCart();
+        window.location.href = `/checkout/success?order=${orderId}`;
       }
     } finally {
       setIsLoading(false);

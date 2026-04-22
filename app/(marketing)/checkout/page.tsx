@@ -303,10 +303,8 @@ export default function CheckoutPage() {
             >
               <StripePaymentForm
                 total={total}
-                onSuccess={() => {
-                  clearCart();
-                  setSubmitted(true);
-                }}
+                orderId={stripeOrderId ?? ""}
+                onClearCart={clearCart}
                 onError={(msg) => alert(msg)}
               />
             </Elements>
