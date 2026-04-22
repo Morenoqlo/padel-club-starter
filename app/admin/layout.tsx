@@ -1,27 +1,11 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // ── Dev bypass ──────────────────────────────────────────────
-  // Set DEV_BYPASS_ADMIN_AUTH=true in .env.local to skip auth
-  // during local development. Never set this in production.
   const isBypass = process.env.DEV_BYPASS_ADMIN_AUTH === "true";
-
-  if (!isBypass) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      redirect("/admin/login");
-    }
-  }
 
   return (
     <div className="flex min-h-screen bg-secondary/30">
