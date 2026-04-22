@@ -24,7 +24,7 @@ export function HeroSection({ className }: HeroProps) {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage:
-            "url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=1920&q=80&auto=format&fit=crop')",
+            "url('https://mcmeoameblplqqdiawjn.supabase.co/storage/v1/object/public/Fotos/hero/hero.jpg')",
         }}
       />
 

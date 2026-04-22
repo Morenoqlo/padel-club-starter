@@ -20,8 +20,8 @@ export const mockTeam: TeamMember[] = [
     role: "Director Técnico",
     bio: "Ex jugador profesional con 15 años de experiencia. Formado en la Academia Nacional de Pádel.",
     image_url:
-      "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=600&h=800&q=80&auto=format&fit=crop&crop=face",
-    object_position: "center top",
+      "https://mcmeoameblplqqdiawjn.supabase.co/storage/v1/object/public/Fotos/team/instructor1.webp",
+    object_position: "50% 15%",
     sort_order: 1,
     is_active: true,
   },
@@ -32,8 +32,8 @@ export const mockTeam: TeamMember[] = [
     role: "Head Coach — Academia",
     bio: "Instructora certificada nivel 3. Especialista en formación infantil y principiantes.",
     image_url:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=800&q=80&auto=format&fit=crop&crop=face",
-    object_position: "center top",
+      "https://mcmeoameblplqqdiawjn.supabase.co/storage/v1/object/public/Fotos/team/instructor2.jpg",
+    object_position: "50% 20%",
     sort_order: 2,
     is_active: true,
   },
@@ -44,8 +44,8 @@ export const mockTeam: TeamMember[] = [
     role: "Coach Alto Rendimiento",
     bio: "Preparador físico y técnico para jugadores competitivos. +200 torneos disputados.",
     image_url:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=800&q=80&auto=format&fit=crop&crop=face",
-    object_position: "center top",
+      "https://mcmeoameblplqqdiawjn.supabase.co/storage/v1/object/public/Fotos/team/instructor3.jpg",
+    object_position: "50% 20%",
     sort_order: 3,
     is_active: true,
   },
