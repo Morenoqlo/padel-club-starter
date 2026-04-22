@@ -116,8 +116,12 @@ export async function POST(req: NextRequest) {
 
     // ── Route to payment provider ─────────────────────────
     if (data.paymentProvider === "stripe") {
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return NextResponse.json({ error: "Stripe no está configurado. Agrega STRIPE_SECRET_KEY en las variables de entorno." }, { status: 500 });
+      }
       const { createPaymentIntent } = await import("@/lib/payments/stripe");
-      const intent = await createPaymentIntent(total * 100, "clp", {
+      // CLP es moneda de cero decimales en Stripe — NO multiplicar por 100
+      const intent = await createPaymentIntent(Math.round(total), "clp", {
         orderId: order.id,
       });
       return NextResponse.json({
@@ -169,8 +173,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ error: "Proveedor de pago no soportado" }, { status: 400 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[Checkout API]", error);
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
+    const msg = error?.message ?? "Error interno";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

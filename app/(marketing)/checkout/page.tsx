@@ -109,12 +109,56 @@ export default function CheckoutPage() {
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof CheckoutFormData, string>> = {};
-    if (!form.email) newErrors.email = "El email es requerido";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Email inválido";
-    if (!form.firstName) newErrors.firstName = "El nombre es requerido";
-    if (!form.lastName) newErrors.lastName = "El apellido es requerido";
-    if (!form.address) newErrors.address = "La dirección es requerida";
-    if (!form.city) newErrors.city = "La ciudad es requerida";
+
+    // Email
+    if (!form.email.trim()) {
+      newErrors.email = "El email es requerido";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) {
+      newErrors.email = "Ingresa un email válido (ej: juan@gmail.com)";
+    }
+
+    // Nombre
+    if (!form.firstName.trim()) {
+      newErrors.firstName = "El nombre es requerido";
+    } else if (form.firstName.trim().length < 2) {
+      newErrors.firstName = "Mínimo 2 caracteres";
+    } else if (!/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s'-]+$/.test(form.firstName.trim())) {
+      newErrors.firstName = "Solo letras, sin números";
+    }
+
+    // Apellido
+    if (!form.lastName.trim()) {
+      newErrors.lastName = "El apellido es requerido";
+    } else if (form.lastName.trim().length < 2) {
+      newErrors.lastName = "Mínimo 2 caracteres";
+    } else if (!/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s'-]+$/.test(form.lastName.trim())) {
+      newErrors.lastName = "Solo letras, sin números";
+    }
+
+    // Teléfono (opcional pero si lo ponen, que sea válido)
+    if (form.phone.trim()) {
+      const digits = form.phone.replace(/\D/g, "");
+      if (digits.length < 8 || digits.length > 15) {
+        newErrors.phone = "Teléfono inválido (ej: +56 9 1234 5678)";
+      }
+    }
+
+    // Dirección
+    if (!form.address.trim()) {
+      newErrors.address = "La dirección es requerida";
+    } else if (form.address.trim().length < 5) {
+      newErrors.address = "Ingresa una dirección completa";
+    }
+
+    // Ciudad
+    if (!form.city.trim()) {
+      newErrors.city = "La ciudad es requerida";
+    } else if (form.city.trim().length < 2) {
+      newErrors.city = "Ingresa una ciudad válida";
+    } else if (!/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s']+$/.test(form.city.trim())) {
+      newErrors.city = "Solo letras, sin números";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
