@@ -25,8 +25,8 @@ export const navigationConfig = {
     info: [
       { label: "FAQ", href: "/faq" },
       { label: "Contacto", href: "/contacto" },
-      { label: "Términos y Condiciones", href: "/legal#terminos" },
-      { label: "Política de Privacidad", href: "/legal#privacidad" },
+      { label: "Términos y Condiciones", href: "/terminos" },
+      { label: "Política de Privacidad", href: "/privacidad" },
     ],
   },
   admin: [
