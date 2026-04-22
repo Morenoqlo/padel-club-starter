@@ -98,9 +98,22 @@ function levelBadge(level: string | null) {
 
 function schedulePreview(schedule: unknown): string {
   if (!schedule) return "—";
-  if (typeof schedule === "string") return schedule.slice(0, 40);
+  if (typeof schedule === "string") return schedule.slice(0, 60);
   try {
-    return JSON.stringify(schedule).slice(0, 40);
+    // Array of { day, time } objects → "Martes 19:00, Jueves 19:00"
+    if (Array.isArray(schedule)) {
+      return schedule
+        .map((s: { day?: string; time?: string }) => `${s.day ?? ""} ${s.time ?? ""}`.trim())
+        .filter(Boolean)
+        .join(", ")
+        .slice(0, 60) || "—";
+    }
+    // Fallback: object with day/time directly
+    if (typeof schedule === "object" && schedule !== null) {
+      const s = schedule as { day?: string; time?: string };
+      if (s.day || s.time) return `${s.day ?? ""} ${s.time ?? ""}`.trim();
+    }
+    return "—";
   } catch {
     return "—";
   }
