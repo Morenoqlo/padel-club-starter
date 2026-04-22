@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 
 export interface TeamMember {
   id: string;
@@ -53,7 +53,7 @@ export const mockTeam: TeamMember[] = [
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
   try {
-    const supabase = await createClient();
+    const supabase = await createServiceClient();
     const { data, error } = await (supabase as any)
       .from("team_members")
       .select("*")
