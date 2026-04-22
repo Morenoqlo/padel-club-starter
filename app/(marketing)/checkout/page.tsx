@@ -136,7 +136,7 @@ export default function CheckoutPage() {
     }
 
     // Teléfono (opcional pero si lo ponen, que sea válido)
-    if (form.phone.trim()) {
+    if (form.phone?.trim()) {
       const digits = form.phone.replace(/\D/g, "");
       if (digits.length < 8 || digits.length > 15) {
         newErrors.phone = "Teléfono inválido (ej: +56 9 1234 5678)";
