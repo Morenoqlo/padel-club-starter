@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { ShoppingBag, ArrowLeft, Check } from "lucide-react";
+import { ShoppingBag, ArrowLeft, Check, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import type { ProductWithVariants } from "@/types";
 import { useCart } from "@/hooks/use-cart";
@@ -17,6 +17,7 @@ export function ProductDetailClient({ product }: Props) {
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [added, setAdded] = useState(false);
+  const [qty, setQty] = useState(1);
   const { addItem } = useCart();
 
   const images: string[] = Array.isArray(product.images) ? (product.images as string[]) : [];
@@ -38,13 +39,14 @@ export function ProductDetailClient({ product }: Props) {
       variantId: selectedVariant ?? undefined,
       name: product.name,
       price: product.price,
-      quantity: 1,
+      quantity: qty,
       image: images[0] ?? "",
       slug: product.slug,
     });
     setAdded(true);
-    toast.success("Añadido al carrito");
+    toast.success(`${qty > 1 ? `${qty}× ` : ""}${product.name} añadido al carrito`);
     setTimeout(() => setAdded(false), 2000);
+    setQty(1);
   };
 
   return (
@@ -92,7 +94,7 @@ export function ProductDetailClient({ product }: Props) {
           <h1 className="heading-lg mb-4">{product.name}</h1>
 
           <div className="flex items-baseline gap-3 mb-6">
-            <span className="font-display text-3xl font-bold">{formatPrice(product.price)}</span>
+            <span className="font-display text-3xl font-bold">{formatPrice(product.price * qty)}</span>
             {product.compare_at_price && (
               <span className="text-lg text-muted-foreground line-through">
                 {formatPrice(product.compare_at_price)}
@@ -135,11 +137,31 @@ export function ProductDetailClient({ product }: Props) {
             </div>
           ))}
 
-          {/* CTA */}
+          {/* Quantity + CTA */}
+          <div className="flex items-center gap-3 mb-0">
+            <div className="flex items-center rounded-xl border border-border overflow-hidden">
+              <button
+                onClick={() => setQty(q => Math.max(1, q - 1))}
+                className="flex h-12 w-12 items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"
+                aria-label="Menos"
+              >
+                <Minus className="h-4 w-4" />
+              </button>
+              <span className="w-10 text-center text-base font-semibold">{qty}</span>
+              <button
+                onClick={() => setQty(q => Math.min(99, q + 1))}
+                className="flex h-12 w-12 items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"
+                aria-label="Más"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
           <Button
             size="lg"
             onClick={handleAddToCart}
-            className="w-full h-12 text-base font-semibold"
+            className="w-full h-12 text-base font-semibold mt-3"
           >
             {added ? (
               <>

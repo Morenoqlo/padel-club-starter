@@ -3,6 +3,7 @@ import {
   Image,
   Calendar,
   Users,
+  UserCheck,
   HelpCircle,
   TrendingUp,
   ArrowUpRight,
@@ -76,6 +77,7 @@ export default async function AdminDashboardPage() {
     { label: "Gestionar galería", href: "/admin/galeria", icon: Image, desc: "Subir y organizar fotos del club" },
     { label: "Gestionar eventos", href: "/admin/eventos", icon: Calendar, desc: "Publicar torneos y eventos sociales" },
     { label: "Gestionar clases", href: "/admin/clases", icon: Users, desc: "Administrar la academia y horarios" },
+    { label: "Gestionar equipo", href: "/admin/equipo", icon: UserCheck, desc: "Editar fotos y perfiles del equipo técnico" },
     { label: "Gestionar FAQ", href: "/admin/faq", icon: HelpCircle, desc: "Editar preguntas frecuentes" },
     { label: "Configuración", href: "/admin/configuracion", icon: Activity, desc: "Ajustes generales del sitio" },
   ];

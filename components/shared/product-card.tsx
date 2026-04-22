@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, Star } from "lucide-react";
+import { ShoppingBag, Star, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { Product } from "@/types";
 import { formatPrice, cn } from "@/lib/utils";
@@ -15,6 +16,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const { addItem } = useCart();
+  const [qty, setQty] = useState(1);
   const discount = product.compare_at_price
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : null;
@@ -24,11 +26,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
       productId: product.id,
       name: product.name,
       price: product.price,
-      quantity: 1,
+      quantity: qty,
       image: product.images[0] ?? "",
       slug: product.slug,
     });
-    toast.success(`${product.name} añadido al carrito`);
+    toast.success(`${qty > 1 ? `${qty}× ` : ""}${product.name} añadido al carrito`);
+    setQty(1);
   };
 
   return (
@@ -75,26 +78,48 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </p>
         )}
 
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
-          <div>
+        <div className="mt-auto pt-3 border-t border-border space-y-3">
+          <div className="flex items-center justify-between">
             <span className="font-display text-lg font-bold">
-              {formatPrice(product.price)}
+              {formatPrice(product.price * qty)}
             </span>
             {product.compare_at_price && (
-              <span className="ml-2 text-xs text-muted-foreground line-through">
+              <span className="text-xs text-muted-foreground line-through">
                 {formatPrice(product.compare_at_price)}
               </span>
             )}
           </div>
 
-          <Button
-            size="sm"
-            onClick={handleAddToCart}
-            className="h-8 w-8 p-0 rounded-full"
-            aria-label="Añadir al carrito"
-          >
-            <ShoppingBag className="h-3.5 w-3.5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Quantity selector */}
+            <div className="flex items-center rounded-xl border border-border overflow-hidden">
+              <button
+                onClick={() => setQty(q => Math.max(1, q - 1))}
+                className="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"
+                aria-label="Menos"
+              >
+                <Minus className="h-3 w-3" />
+              </button>
+              <span className="w-8 text-center text-sm font-semibold">{qty}</span>
+              <button
+                onClick={() => setQty(q => Math.min(99, q + 1))}
+                className="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"
+                aria-label="Más"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
+
+            {/* Add to cart */}
+            <Button
+              size="sm"
+              onClick={handleAddToCart}
+              className="flex-1 h-8 gap-1.5 text-xs"
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              Agregar
+            </Button>
+          </div>
         </div>
       </div>
     </article>

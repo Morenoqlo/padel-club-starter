@@ -7,6 +7,7 @@ import {
   Coffee, Package, Lock, CheckCircle2, ArrowRight,
 } from "lucide-react";
 import { whatsappUrl } from "@/lib/utils";
+import { getTeamMembers } from "@/services/team";
 
 export const metadata: Metadata = {
   title: "El Club",
@@ -29,28 +30,13 @@ const STATS = [
   { value: "7/7", label: "Días disponible" },
 ];
 
-const TEAM = [
-  {
-    name: "Carlos Mendoza",
-    role: "Director Técnico",
-    bio: "Ex jugador profesional con 15 años de experiencia. Formado en la Academia Nacional de Pádel.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&q=80&auto=format&fit=crop&crop=face",
-  },
-  {
-    name: "María González",
-    role: "Head Coach — Academia",
-    bio: "Instructora certificada nivel 3. Especialista en formación infantil y principiantes.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&q=80&auto=format&fit=crop&crop=face",
-  },
-  {
-    name: "Diego Fernández",
-    role: "Coach Alto Rendimiento",
-    bio: "Preparador físico y técnico para jugadores competitivos. +200 torneos disputados.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&q=80&auto=format&fit=crop&crop=face",
-  },
-];
+// Team is now loaded dynamically from Supabase / service
 
-export default function ClubPage() {
+export const revalidate = 300;
+
+export default async function ClubPage() {
+  const team = await getTeamMembers();
+
   return (
     <div className="pt-20">
       {/* Hero */}
@@ -218,20 +204,29 @@ export default function ClubPage() {
             <h2 className="heading-lg">Los mejores entrenadores de la región.</h2>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {TEAM.map((member) => (
-              <div key={member.name} className="group rounded-2xl border border-border bg-background overflow-hidden hover:border-accent/30 transition-colors">
-                <div className="relative h-52 overflow-hidden bg-secondary">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+            {team.map((member) => (
+              <div key={member.id} className="group rounded-2xl border border-border bg-background overflow-hidden hover:border-accent/30 transition-colors">
+                <div className="relative h-80 overflow-hidden bg-secondary">
+                  {member.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={member.image_url}
+                      alt={member.name}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      style={{ objectPosition: member.object_position ?? "center top" }}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-secondary">
+                      <span className="text-5xl">👤</span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-5">
                   <p className="label-overline mb-1 text-accent">{member.role}</p>
                   <h3 className="font-display text-lg font-bold mb-2">{member.name}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{member.bio}</p>
+                  {member.bio && (
+                    <p className="text-sm text-muted-foreground leading-relaxed">{member.bio}</p>
+                  )}
                 </div>
               </div>
             ))}

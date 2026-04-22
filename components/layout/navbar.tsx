@@ -41,12 +41,15 @@ export function Navbar() {
   const { openCart } = useCart();
   const itemCount = useCart(selectItemCount);
   const { scrolled } = useScroll(20);
+  // Only show transparent navbar on home page (which has a dark hero)
+  const isHome = pathname === "/";
+  const solid = scrolled || !isHome;
 
   return (
     <header
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-300",
-        scrolled
+        solid
           ? "border-b border-border/60 bg-background/95 backdrop-blur-md shadow-sm"
           : "bg-transparent"
       )}
@@ -66,7 +69,7 @@ export function Navbar() {
               href={item.href}
               className={cn(
                 "text-sm font-medium transition-colors",
-                scrolled
+                solid
                   ? pathname === item.href
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
